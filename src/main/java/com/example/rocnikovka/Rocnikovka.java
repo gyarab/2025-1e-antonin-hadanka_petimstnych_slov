@@ -353,7 +353,7 @@ public class Rocnikovka extends Application {
         timeline.play();
     }
 
-    // === RESET HRY ===
+    // RESET HRY
 
     /** Resetuje hru do počátečního stavu a načte nové tajné slovo. */
     private void resetGame() {
