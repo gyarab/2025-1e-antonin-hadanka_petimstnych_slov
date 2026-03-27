@@ -7,4 +7,3 @@ public class Launcher {
         Application.launch(com.example.rocnikovka.Rocnikovka.class, args);
     }
 }
-jhghjhj
