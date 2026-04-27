@@ -103,7 +103,7 @@ public class Rocnikovka extends Application {
         setupNewGameButton();
 
         Scene scene = new Scene(root, 500, 580);
-        stage.setTitle("Frutiger Aero - Wordle");
+        stage.setTitle("Frutiger Aero - Hádanka");
         stage.setScene(scene);
         stage.show();
 
