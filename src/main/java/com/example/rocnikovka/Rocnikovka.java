@@ -81,7 +81,7 @@ public class Rocnikovka extends Application {
         return Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(normalized).replaceAll("");
     }
 
-    //  UI
+    //       UI
 
     @Override
     public void start(Stage stage) {
