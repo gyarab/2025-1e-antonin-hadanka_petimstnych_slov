@@ -26,36 +26,34 @@ import java.util.regex.Pattern;
 
 public class Rocnikovka extends Application {
 
-    // === HERNÍ PROMĚNNÉ ===
-    private String SECRET_WORD;          // Tajné slovo
-    private final int MAX_ATTEMPTS = 6;  // Počet pokusů
-    private int currentAttempt = 0;      // Aktuální pokus
 
-    // === UI PRVKY ===
+    private String SECRET_WORD;
+    private final int MAX_ATTEMPTS = 6;
+    private int currentAttempt = 0;
+
+
     private GridPane grid = new GridPane();
-    private Label[][] labels = new Label[MAX_ATTEMPTS][5]; // Mřížka políček 6x5
+    private Label[][] labels = new Label[MAX_ATTEMPTS][5];
     private TextField inputField;
     private Button newGameButton;
     private StackPane root;
     private VBox gameContent;
-    private Pane confettiPane;   // Vrstva pro konfety (výhra)
-    private Pane curtainPane;    // Vrstva pro závěsy (prohra)
+    private Pane confettiPane;
+    private Pane curtainPane;
     private Rectangle curtainLeft;
     private Rectangle curtainRight;
 
     private Random random = new Random();
 
-    // === KONSTRUKTOR ===
+
     public Rocnikovka() {
         SECRET_WORD = loadRandomWord().toUpperCase();
-        System.out.println("Tajné slovo: " + SECRET_WORD); // Pro ladění
+        System.out.println("Tajné slovo: " + SECRET_WORD);
     }
 
-    // === NAČTENÍ SLOVA ===
 
-    /**
-     * Načte náhodné 5písmenné slovo ze souboru words.txt.
-     */
+
+
     private String loadRandomWord() {
         List<String> words = new ArrayList<>();
 
@@ -64,7 +62,7 @@ public class Rocnikovka extends Application {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                // Přidáme jen 5písmenná slova
+
                 if (line.trim().length() == 5 && line.trim().matches("\\p{L}+")) {
                     words.add(line.trim());
                 }
@@ -77,16 +75,13 @@ public class Rocnikovka extends Application {
         return words.get(random.nextInt(words.size()));
     }
 
-    /**
-     * Odstraní diakritiku ze vstupního textu, aby šlo porovnávat
-     * písmena bez háčků a čárek (např. 'Á' -> 'A').
-     */
+
     private String normalize(String text) {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
         return Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(normalized).replaceAll("");
     }
 
-    // === SESTAVENÍ UI ===
+    //  UI
 
     @Override
     public void start(Stage stage) {
@@ -115,7 +110,7 @@ public class Rocnikovka extends Application {
         bindCurtainsToScene(scene);
     }
 
-    /** Vytvoří mřížku 6x5 s prázdnými políčky. */
+
     private void setupGrid() {
         grid.setHgap(10);
         grid.setVgap(10);
@@ -135,10 +130,10 @@ public class Rocnikovka extends Application {
         }
     }
 
-    /** Vytvoří textové pole pro zadávání slov. Enter odešle tip. */
+
     private void setupInputField() {
         inputField = new TextField();
-        inputField.setPromptText("Zadej 5místné slovo a stiskni Enter");
+        inputField.setPromptText("Zadej 5místné slovo");
         inputField.setMaxWidth(300);
         inputField.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-border-color: #a0c2e6; " +
                 "-fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; " +
@@ -146,14 +141,14 @@ public class Rocnikovka extends Application {
         inputField.setOnAction(e -> handleGuess());
     }
 
-    /** Vytvoří průhlednou vrstvu pro konfety (zobrazí se při výhře). */
+
     private void setupConfettiPane() {
         confettiPane = new Pane();
         confettiPane.setMouseTransparent(true);
         root.getChildren().add(confettiPane);
     }
 
-    /** Vytvoří vrstvu pro animaci závěsů (zobrazí se při prohře). */
+
     private void setupCurtainPane() {
         curtainPane = new Pane();
         curtainPane.setMouseTransparent(false);
@@ -170,7 +165,7 @@ public class Rocnikovka extends Application {
         root.getChildren().add(curtainPane);
     }
 
-    /** Vytvoří tlačítko "Další hra", které se zobrazí po skončení hry. */
+
     private void setupNewGameButton() {
         newGameButton = new Button("Další hra");
         newGameButton.setStyle("-fx-background-color: linear-gradient(to bottom, #87CEEB, #4682B4); " +
@@ -182,16 +177,16 @@ public class Rocnikovka extends Application {
         root.getChildren().add(newGameButton);
     }
 
-    // === ZÁVĚSY ===
 
-    /** Naváže závěsy na velikost okna – automaticky se přizpůsobí při změně. */
+
+
     private void bindCurtainsToScene(Scene scene) {
         setupCurtains(scene.getWidth(), scene.getHeight());
         scene.widthProperty().addListener((obs, oldVal, newVal) -> setupCurtains(newVal.doubleValue(), scene.getHeight()));
         scene.heightProperty().addListener((obs, oldVal, newVal) -> setupCurtains(scene.getWidth(), newVal.doubleValue()));
     }
 
-    /** Nastaví rozměry a pozice závěsů podle aktuální velikosti okna. */
+
     private void setupCurtains(double w, double h) {
         double half = w / 2;
         curtainPane.setPrefSize(w, h);
@@ -203,19 +198,19 @@ public class Rocnikovka extends Application {
         curtainRight.setHeight(h);
 
         if (!curtainLeft.isVisible()) {
-            // Skryté – mimo obrazovku
+
             curtainLeft.setX(-half);
             curtainRight.setX(w);
         } else {
-            // Viditelné – uprostřed se setkají
+
             curtainLeft.setX(0);
             curtainRight.setX(half);
         }
     }
 
-    // === HERNÍ LOGIKA ===
 
-    /** Zpracuje tip hráče – zavolá se po stisku Enter. */
+
+
     private void handleGuess() {
         String guess = inputField.getText().toUpperCase();
         if (guess.length() == 5 && currentAttempt < MAX_ATTEMPTS) {
@@ -225,9 +220,7 @@ public class Rocnikovka extends Application {
         }
     }
 
-    /**
-     * Vyhodnotí zadané slovo
-     */
+
     private void processGuess(String guess) {
         String secretNorm = normalize(SECRET_WORD);
         String guessNorm  = normalize(guess);
@@ -241,18 +234,18 @@ public class Rocnikovka extends Application {
             label.setText(String.valueOf(guessChar));
 
             if (guessChar == secretChar) {
-                // Správné místo – zelená
+
                 label.setStyle("-fx-background-color: linear-gradient(to bottom, #8aff8a, #4caf50); -fx-border-color: #4caf50; " +
                         "-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold; -fx-background-radius: 8; -fx-border-radius: 8;");
                 jumpAnimations.add(createJumpAnimation(label));
 
             } else if (secretNorm.contains(String.valueOf(guessNorm.charAt(i)))) {
-                // Špatné místo – žlutá
+
                 label.setStyle("-fx-background-color: linear-gradient(to bottom, #ffeb8a, #ffc107); -fx-border-color: #ffc107; " +
                         "-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold; -fx-background-radius: 8; -fx-border-radius: 8;");
 
             } else {
-                // Není ve slově – modrá
+
                 label.setStyle("-fx-background-color: linear-gradient(to bottom, #b0c4de, #87a9c8); -fx-border-color: #87a2c8; " +
                         "-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold; -fx-background-radius: 8; -fx-border-radius: 8;");
             }
@@ -260,13 +253,13 @@ public class Rocnikovka extends Application {
 
         currentAttempt++;
 
-        // Pokud hráč uhodl, políčka poskočí
+
         if (guess.equals(SECRET_WORD)) {
             new ParallelTransition(jumpAnimations.toArray(new Animation[0])).play();
         }
     }
 
-    /** Animace poskočení políčka při správném tipu. */
+
     private Animation createJumpAnimation(Label label) {
         TranslateTransition tt = new TranslateTransition(Duration.millis(300), label);
         tt.setByY(-20);
@@ -275,7 +268,7 @@ public class Rocnikovka extends Application {
         return tt;
     }
 
-    /** Zkontroluje, jestli hráč vyhrál nebo prohrál, a spustí příslušnou animaci. */
+
     private void checkGameStatus(String guess) {
         if (guess.equals(SECRET_WORD)) {
             inputField.setDisable(true);
@@ -289,9 +282,9 @@ public class Rocnikovka extends Application {
         }
     }
 
-    // === ANIMACE ===
 
-    /** Spustí konfety při výhře – barevné obdélníčky padají z hora dolů. */
+
+
     private void startConfettiAnimation() {
         confettiPane.getChildren().clear();
 
@@ -320,12 +313,12 @@ public class Rocnikovka extends Application {
         }
     }
 
-    /** Vrátí náhodnou barvu pro konfety. */
+
     private Color randomColor() {
         return Color.rgb(random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
 
-    /** Spustí animaci závěsů při prohře – dva panely se zavřou jako opona. */
+
     private void startCurtainAnimation() {
         double w    = root.getWidth();
         double h    = root.getHeight();
@@ -341,7 +334,7 @@ public class Rocnikovka extends Application {
         curtainLeft.setVisible(true);
         curtainRight.setVisible(true);
 
-        // Levý závěs jede doprava na x=0, pravý doleva na x=half
+
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(curtainLeft.xProperty(), -half),
@@ -353,9 +346,8 @@ public class Rocnikovka extends Application {
         timeline.play();
     }
 
-    // RESET HRY
 
-    /** Resetuje hru do počátečního stavu a načte nové tajné slovo. */
+
     private void resetGame() {
         currentAttempt = 0;
         SECRET_WORD = loadRandomWord().toUpperCase();
@@ -365,13 +357,13 @@ public class Rocnikovka extends Application {
         newGameButton.setVisible(false);
         confettiPane.getChildren().clear();
 
-        // Skrýt závěsy zpět mimo obrazovku
+
         curtainLeft.setVisible(false);
         curtainRight.setVisible(false);
         curtainLeft.setX(-curtainLeft.getWidth());
         curtainRight.setX(root.getWidth());
 
-        // Vyčistit všechna políčka mřížky
+
         for (int row = 0; row < MAX_ATTEMPTS; row++) {
             for (int col = 0; col < 5; col++) {
                 labels[row][col].setText("");
