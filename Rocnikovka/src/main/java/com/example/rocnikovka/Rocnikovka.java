@@ -53,7 +53,7 @@ public class Rocnikovka extends Application {
 
 
 
-    /
+    
     private String loadRandomWord() {
         List<String> words = new ArrayList<>();
 
